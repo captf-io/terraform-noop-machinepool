@@ -16,10 +16,12 @@
 # and machinepool.html).
 
 variable "captf_contract" {
-  type = string
+  description = "Contract version the controller generated the root for; always v1alpha1."
+  type        = string
 }
 
 variable "captf_cluster" {
+  description = "The owning CAPI Cluster: name and namespace."
   type = object({
     name      = string
     namespace = string
@@ -27,6 +29,7 @@ variable "captf_cluster" {
 }
 
 variable "captf_object" {
+  description = "The TerraformMachinePool being reconciled: kind, name and namespace."
   type = object({
     kind      = string
     name      = string
@@ -37,51 +40,62 @@ variable "captf_object" {
 # The cluster module's exports. The controller always sets it; the default
 # follows the contract skeleton (machinepool.md).
 variable "captf_cluster_outputs" {
-  type    = any
-  default = null
+  description = "The cluster role's exports (backend_id from terraform-noop-cluster). Null by default, following the contract skeleton."
+  type        = any
+  default     = null
 }
 
 variable "captf_tags" {
-  type = map(string)
+  description = "Tags the controller always sets (captf.io/cluster, captf.io/namespace, captf.io/kind, captf.io/name, captf.io/managed-by, captf.io/template); held in terraform_data like every other input."
+  type        = map(string)
 }
 
 variable "machinepool_name" {
-  type = string
+  description = "The owning CAPI MachinePool's name. Held, otherwise unused."
+  type        = string
 }
 
 # The group's desired capacity.
 variable "replicas" {
-  type = number
+  description = "The pool's desired size: the number of stand-in instances."
+  type        = number
 }
 
 # Base64 of the bootstrap Secret's value.
 variable "bootstrap_data" {
-  type      = string
-  sensitive = true
+  description = "Base64 of the bootstrap Secret's value. Held, never parsed or delivered."
+  type        = string
+  sensitive   = true
 }
 
 variable "bootstrap_format" {
-  type = string
+  description = "The bootstrap payload's format: cloud-config or ignition."
+  type        = string
 }
 
 variable "failure_domains" {
-  type = list(string)
+  description = "MachinePool.spec.failureDomains. Held, otherwise unused."
+  type        = list(string)
 }
 
 variable "cluster_failure_domains" {
-  type = list(string)
+  description = "The cluster's failure-domain names. Held, otherwise unused."
+  type        = list(string)
 }
 
 variable "kubernetes_version" {
-  type    = string
-  default = null
+  description = "MachinePool.spec.template.spec.version. Held, otherwise unused."
+  type        = string
+  default     = null
 }
 
 variable "node_labels" {
-  type = map(string)
+  description = "MachinePool.spec.template.metadata.labels. Held, otherwise unused."
+  type        = map(string)
 }
 
 variable "autoscaling" {
+  description = "Parsed from the MachinePool's autoscaler min and max size annotations. Held, otherwise unused."
   type = object({
     enabled = bool
     min     = number

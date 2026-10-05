@@ -25,21 +25,26 @@ locals {
 # this is a synthetic group id (machinepool.md "provider_id ... may stay
 # null for group-less implementations"; this module chooses to set one).
 output "provider_id" {
-  value = "noop-group:///${var.captf_object.namespace}/${var.captf_object.name}"
+  description = "noop-group:///<namespace>/<TerraformMachinePool name>, the pool's provider ID."
+  value       = "noop-group:///${var.captf_object.namespace}/${var.captf_object.name}"
 }
 
 output "provider_id_list" {
-  value = sort(local.raw_ids)
+  description = "noop:///<namespace>/<TerraformMachinePool name>/<i> for i from 0 to replicas - 1, sorted."
+  value       = sort(local.raw_ids)
 }
 
 output "replicas" {
-  value = var.replicas
+  description = "The replicas input."
+  value       = var.replicas
 }
 
 output "instances" {
-  value = [for id in sort(local.raw_ids) : { provider_id = id, state = "running" }]
+  description = "One entry per stand-in instance: its provider ID and state running."
+  value       = [for id in sort(local.raw_ids) : { provider_id = id, state = "running" }]
 }
 
 output "health" {
-  value = { state = "running", healthy = true, message = null, reasons = [] }
+  description = "Always running and healthy."
+  value       = { state = "running", healthy = true, message = null, reasons = [] }
 }
