@@ -29,9 +29,10 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  # Every check on the module code: license headers, fmt, validate on both
-  # runtimes and their floors, and an apply/destroy of test/root, the root
-  # module that sets every contract input. The module needs no providers.
+  # Every check on the module code: tfcapi-lint, then license headers, fmt,
+  # validate on both runtimes and their floors, and an apply/destroy of
+  # test/root, the root module that sets every contract input. The module
+  # needs no providers.
   verify:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -39,5 +40,19 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # The role comes from the Makefile (ROLE).
+      - name: tfcapi-lint settings
+        id: lint
+        run: echo "role=$(make -s --no-print-directory print-ROLE)" >>"${GITHUB_OUTPUT}"
+      # The provider's tfcapi-lint image, at the version the pin names
+      # (https://captf.io/docs/module-author/tfcapi-lint-ci.html).
+      - uses: captf-io/cluster-api-provider-terraform/actions/tfcapi-lint@a31db9395964b771715992f9b63409e7c4044c4c # v0.1.1
+        with:
+          command: module
+          target: .
+          role: ${{ steps.lint.outputs.role }}
+          strict: true
+      # Runs even when the lint failed, to report every problem in one go.
       - name: Verify
+        if: ${{ !cancelled() }}
         run: make verify ENGINE=docker

@@ -73,7 +73,8 @@ fixture for testing a configuration that drives CAPTF modules.
 
 The host needs make and podman (or docker with `ENGINE=docker`); the
 runtimes run in containers pinned by digest. `make verify` is the gate CI
-runs.
+runs, after linting the module with the provider's [tfcapi-lint GitHub
+Action](https://captf.io/docs/module-author/tfcapi-lint-ci.html).
 
 | Target | What it does |
 | --- | --- |
